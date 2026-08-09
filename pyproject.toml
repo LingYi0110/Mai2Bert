@@ -1,7 +1,7 @@
 [project]
 name = "mai2bert"
 version = "0.1.0"
-description = "Structured-event BERT pretraining and difficulty regression for maimai MA2 charts"
+description = "A BERT-style self-supervised pretraining framework for structured event sequences from maimai charts"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

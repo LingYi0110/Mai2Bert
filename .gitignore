@@ -35,3 +35,7 @@ predictions.csv
 
 # Tests are not published
 tests/
+
+
+# Local configuration with dataset paths - not published
+configs/
