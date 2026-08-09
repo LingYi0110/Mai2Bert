@@ -53,7 +53,7 @@ torchvision = { index = "pytorch-cu132" }
 addopts = "-ra"
 testpaths = ["tests"]
 # "src" must end up first on sys.path (pytest prepends in order) so the
-# root-level preprocessing.py script does not shadow the src/preprocessing
+# root-level prepare.py script does not shadow the src/preprocessing
 # package during test collection.
 pythonpath = ["tests", "src", "scripts"]
 
