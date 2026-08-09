@@ -27,6 +27,7 @@ from training.common import (
     regression_loader,
     resolve_resume_checkpoint,
 )
+from training.ema import EmaMixin
 from training.losses import (
     gaussian_interval_nll,
     gaussian_point_nll,
@@ -51,7 +52,7 @@ def set_encoder_trainability(
     _set_trainability(encoder, trainable_layers=trainable_layers, enabled=enabled)
 
 
-class RegressionModule(L.LightningModule):
+class RegressionModule(EmaMixin):
     def __init__(
         self,
         config: AppConfig,
@@ -274,6 +275,7 @@ class RegressionModule(L.LightningModule):
         self.validation_targets.clear()
         self.validation_groups.clear()
         self.validation_sigmas.clear()
+        super().on_validation_epoch_end()
 
     def configure_optimizers(self) -> Any:
         optimizer = build_optimizer(

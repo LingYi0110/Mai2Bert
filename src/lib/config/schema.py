@@ -239,6 +239,8 @@ class OptimizerConfig(StrictModel):
     scheduler: Literal["none", "cosine"] = "cosine"
     warmup_ratio: float = Field(0.05, ge=0, le=0.5)
     min_lr_ratio: float = Field(0.1, ge=0, le=1)
+    # Exponential moving average over trainable weights; None disables.
+    ema_decay: float | None = Field(None, gt=0, lt=1)
 
 
 class TrainerConfig(StrictModel):

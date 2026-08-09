@@ -61,7 +61,11 @@ def load_module(
             target_mean=float(hyperparameters["target_mean"]),
             target_std=float(hyperparameters["target_std"]),
         )
-        missing, unexpected = module.load_state_dict(payload["state_dict"], strict=False)
+        state_dict = payload["state_dict"]
+        ema_state_dict = payload.get("ema_state_dict")
+        if isinstance(ema_state_dict, dict) and ema_state_dict:
+            state_dict = {**state_dict, **ema_state_dict}
+        missing, unexpected = module.load_state_dict(state_dict, strict=False)
         missing_set, unexpected_set = set(missing), set(unexpected)
         allowed_missing = _missing_gaussian_parameters(missing_set)
         if missing_set - allowed_missing:

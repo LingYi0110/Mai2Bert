@@ -30,10 +30,11 @@ from training.common import (
     resolve_dataset_binary_dir,
     resolve_resume_checkpoint,
 )
+from training.ema import EmaMixin
 from training.optimizers import build_optimizer
 
 
-class PretrainingModule(L.LightningModule):
+class PretrainingModule(EmaMixin):
     def __init__(self, config: AppConfig) -> None:
         super().__init__()
         self.config = config

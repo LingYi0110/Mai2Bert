@@ -27,7 +27,7 @@ class DynamicBatchSampler(Sampler[list[int]]):
         shuffle: bool = True,
         seed: int = 42,
     ) -> None:
-        """Length-bucketed batch sampler. """
+        """Length-bucketed batch sampler."""
         if not lengths:
             raise ValueError("lengths cannot be empty")
         if max_tokens <= 0 or max_batch_size <= 0 or bucket_size <= 0:
