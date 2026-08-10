@@ -41,6 +41,18 @@ class EmaTracker:
     def state_dict(self) -> dict[str, torch.Tensor]:
         return {name: tensor.clone() for name, tensor in self._shadow.items()}
 
+    def to_(self, device: torch.device) -> None:
+        """Move the shadow copy onto ``device``.
+
+        Checkpoint serialization drops tensor device information (pickle
+        restores CPU tensors), so after ``load_state_dict`` the shadow may
+        live on a different device than the live model parameters.
+        """
+        if any(tensor.device != device for tensor in self._shadow.values()):
+            self._shadow = {
+                name: tensor.to(device) for name, tensor in self._shadow.items()
+            }
+
     def load_state_dict(self, state_dict: Mapping[str, torch.Tensor]) -> None:
         for name, tensor in self._shadow.items():
             if tensor.shape != state_dict[name].shape:
@@ -63,6 +75,11 @@ class EmaMixin(L.LightningModule):
     def on_fit_start(self) -> None:
         super().on_fit_start()
         self._ensure_ema()
+        if hasattr(self, "_ema"):
+            # Pickle drops tensor devices; realign the shadow after Lightning
+            # moved the model onto its final device (before any val/step hook
+            # touches the EMA copy).
+            self._ema.to_(next(self.parameters()).device)
 
     def on_load_checkpoint(self, checkpoint: dict[str, Any]) -> None:
         super().on_load_checkpoint(checkpoint)

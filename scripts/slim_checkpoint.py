@@ -43,6 +43,14 @@ def slim_payload(
     if missing:
         raise ValueError(f"not a Lightning checkpoint (missing {missing})")
     slimmed: dict[str, object] = {key: payload[key] for key in _REQUIRED_KEYS}
+    ema_state = payload.get("ema_state_dict")
+    state_dict = slimmed.get("state_dict")
+    if isinstance(ema_state, dict) and ema_state and isinstance(state_dict, dict):
+        # The EMA shadow mirrors the full parameter set; fold it into
+        # state_dict so the slimmed artifact carries ONLY the final EMA
+        # weights (the inference loader prefers EMA when both are present,
+        # so folding keeps results identical while dropping the duplicate).
+        slimmed["state_dict"] = {**state_dict, **ema_state}
     if keep_optimizer:
         for key in _RESUME_KEYS:
             if key in payload:
